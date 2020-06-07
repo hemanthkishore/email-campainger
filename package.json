@@ -9,7 +9,7 @@
     "server": "nodemon server.js",
     "client": "npm start --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client" 
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
   },
   "author": "hemanth",
   "license": "MIT",
@@ -22,6 +22,6 @@
     "express": "^4.16.4",
     "faker": "^4.1.0",
     "mongoose": "^5.3.11",
-    "nodemon": "^2.0.4",
+    "nodemon": "^2.0.4"
   }
 }

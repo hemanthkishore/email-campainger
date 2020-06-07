@@ -34,6 +34,8 @@ const sendEmails = (userDetails, data) => {
             }
         });
         sgMail.send(mails).then(response => {
+            console.log("Mails :: ", mails);
+            console.log("sgMail :: ", response);
             return resolve(response);
         }).catch(error => {
             console.log(error.response.body.errors, "error");

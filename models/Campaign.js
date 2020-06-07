@@ -16,6 +16,10 @@ const CampaignDataSchema = new Schema({
     },
     emailParams: {
         type: Schema.Types.Mixed
+    },
+    status: {
+        type: String,
+        default: 'Not Completed'
     }
 });
 

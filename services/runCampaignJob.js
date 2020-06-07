@@ -1,4 +1,3 @@
-const mongoose = require("mongoose");
 const Campaign = require('../models/Campaign');
 const CampaignUser = require('../models/CampaignUsers');
 const sgMail = require('@sendgrid/mail');
@@ -16,22 +15,27 @@ const fetchUsers = (index, limit) => {
     });
 }
 
-const sendEmails = (users, data) => {
+const sendEmails = (userDetails, data) => {
+    const users = userDetails.userData;
     return new Promise(resolve => {
         const mails = [];
         users.forEach(user => {
-            mails.push({
-                to: user.email,
-                from: 'hemanth7kishore@gmail.com',
-                subject: data.emailSubject,
-                text: data.emailBody,
-                html: `<p>${data.emailBody}</p> <br></br> <a href="*|UNSUB|*">Unsubscribe from this list.</a>`,
-            });
+            if (!user.unsubscribe) {
+                const unsubscribeURL = process.env.NODE_ENV === "production" ?
+                    `https://rocky-taiga-73939.herokuapp.com/${userDetails.customId}/unsubscribe?userId=${user._id}` :
+                    `http://localhost:3000/campaigns/${userDetails.customId}/unsubscribe?userId=${user._id}`
+                mails.push({
+                    to: user.email,
+                    from: 'hemanth7kishore@gmail.com',
+                    subject: data.emailSubject,
+                    text: data.emailBody,
+                    html: `<p>${data.emailBody}</p> <br></br> <a href='${unsubscribeURL}'>Unsubscribe from this list.</a>`,
+                });
+            }
         });
-        console.log(mails, "mail");
-        sgMail.send(mails).then(response=>{
+        sgMail.send(mails).then(response => {
             return resolve(response);
-        }).catch(error=>{
+        }).catch(error => {
             console.log(error.response.body.errors, "error");
         });
     });
@@ -43,7 +47,7 @@ module.exports = (agenda) => {
 
         const data = job.attrs.data;
         Campaign.findById({ _id: data.campainId }).then(async response => {
-            
+
             const campaignData = response.campaignData.find(e => {
                 return e.equals(data.campaignDataId)
             });
@@ -53,16 +57,18 @@ module.exports = (agenda) => {
 
             for (let i = 1; i <= max_limit; i++) {
                 const users = await fetchUsers(response.name, i);
-                // console.log(users, "user");
-                // console.log(users.userData, "Data")
-                const emails = await sendEmails(users[0].userData, campaignData);
-                // console.log(emails)
+                await sendEmails(users[0], campaignData);
             }
 
-            console.log("Finished");
-
             // update the campaign as finished
-
+            Campaign.updateOne(
+                { _id: data.campainId, 'campaignData._id': data.campaignDataId },
+                { $set: { 'campaignData.$.status': 'completed' } }
+            ).then(response=>{
+                console.log(response, "resp");
+            }).catch(error=>{
+                console.log(error, "error");
+            });
         }).catch(error => {
             console.log(error, "rrr");
         });

@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 
-import { List, Row, Col, Button, Modal, Form, Input, DatePicker } from 'antd';
+import { List, Row, Col, Button, Modal, Form, Input, DatePicker, Switch } from 'antd';
 import { getCampaignData, addScheduleToCampaign } from '../utils/apis';
+import ListUsers from './ListUsers';
 
 const layout = {
     labelCol: { span: 4 },
@@ -12,6 +13,12 @@ const tailLayout = {
     wrapperCol: { offset: 4 },
 };
 
+const getISTTime = (date) => {
+    let d = new Date(date);
+    let time = d.getTime() + (5.5 * 60 * 60 * 1000)
+    return new Date(time).toJSON();
+}
+
 class Campaign extends Component {
 
     constructor(props) {
@@ -21,7 +28,8 @@ class Campaign extends Component {
             loading: false,
             campaignData: {},
             sendersLis: [],
-            addSchedule: false
+            addSchedule: false,
+            listUsers: false
         }
     }
 
@@ -37,7 +45,11 @@ class Campaign extends Component {
     }
 
     addSchedule = () => {
-        this.setState({ addSchedule: true })
+        this.setState({ addSchedule: true });
+    }
+
+    displayUsers = (change) => {
+        this.setState({ listUsers: change });
     }
 
     handleCancel = e => {
@@ -98,7 +110,7 @@ class Campaign extends Component {
                     <List.Item>
                         <Row style={{ width: "100%" }}>
                             <Col span={6}>
-                                {item.scheduledDate}
+                                {getISTTime(item.scheduledDate)}
                             </Col>
                             <Col span={6}>
                                 {item.emailBody}
@@ -117,7 +129,7 @@ class Campaign extends Component {
     }
 
     render() {
-        const campaignData = this.state.campaignData;
+        const { campaignData, listUsers } = this.state;
         if (this.state.loading) {
             return (
                 <p>Data is loading</p>
@@ -133,7 +145,16 @@ class Campaign extends Component {
                         <p>{campaignData.description}</p>
                         <p>Totoal Users: <strong>{campaignData.userCount}</strong></p>
                         <Button onClick={this.addSchedule}>Add Schedule</Button>
-                        {this.campaingsList()}
+                        <Switch style={{ marginLeft: "10px" }} onClick={this.displayUsers} />
+                        <span style={{ marginLeft: "10px" }}> List Users </span>
+                        <div style={{marginTop: "20px"}}>
+                            {
+                                !listUsers && this.campaingsList()
+                            }
+                            {
+                                listUsers && <ListUsers campaignData={this.state.campaignData}/>
+                            }
+                        </div>
                     </div>
                 }
                 {

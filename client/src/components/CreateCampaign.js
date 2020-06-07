@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 
 import papaparse from 'papaparse';
-import { Form, Input, Button, DatePicker, Upload } from 'antd';
-import { InboxOutlined } from '@ant-design/icons';
+import { Form, Input, Button, Tooltip, Upload, message } from 'antd';
 import { createCampaign } from '../utils/apis';
-import { Redirect } from 'react-router-dom';
 
 const layout = {
     labelCol: { span: 6 },
@@ -46,8 +44,12 @@ class CreateCampaign extends Component {
         papaparse.parse(file, {
             header: true,
             complete: (results) => {
-                console.log(results, "results");
-                this.setState({ data: results.data });
+                const fields = ["username", "email"];
+                if (JSON.stringify(fields) !== JSON.stringify(results.meta.fields)) {
+                    message.error('Columns dont match');
+                } else {
+                    this.setState({ data: results.data });
+                }
             },
             error: (err) => {
                 console.log(err);
@@ -83,25 +85,20 @@ class CreateCampaign extends Component {
                     </Form.Item>
                     <Form.Item label="Data">
                         <Form.Item name="data" valuePropName="fileList" noStyle>
-                            {/* <Upload.Dragger name="files" action="/upload.do" customRequest={this.normFile}>
-                                <p className="ant-upload-drag-icon">
-                                    <InboxOutlined />
-                                </p>
-                                <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                                <p className="ant-upload-hint">Support for a single or bulk upload.</p>
-                            </Upload.Dragger> */}
                             <Upload
                                 accept=".csv"
                                 name="file"
                                 showUploadList={false}
                                 customRequest={this.normFile}
-                            // onChange={this.handleChangeUpload.bind(this)}
-                            // className={styles.dataMenu}
+                                disabled={this.state.data.length > 0}
                             >
-                                {this.state.data.length > 0 && <p>Uploaded</p>}
-                                {this.state.data.length === 0 && <Button>Upload</Button>}
+                                <Tooltip title="Upload data in username,email format">
+                                    {this.state.data.length > 0 && <p>Uploaded</p>}
+                                    {this.state.data.length === 0 && <Button>Upload</Button>}
+                                </Tooltip>
                             </Upload>
                         </Form.Item>
+
                     </Form.Item>
 
                     <Form.Item {...tailLayout}>

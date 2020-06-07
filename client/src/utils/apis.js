@@ -22,3 +22,7 @@ export function addScheduleToCampaign(id, data) {
 export function unsubscribeUser(id, userId) {
     return axios.post(`${url}/api/campaigns/${id}/unsubscribe?userId=${userId}`);
 }
+
+export function getUsersForCampaign(id, name, limit) {
+    return axios.get(`${url}/api/campaigns/${id}/users?name=${name}&limit=${limit}`);
+}

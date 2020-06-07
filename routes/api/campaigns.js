@@ -71,7 +71,6 @@ router.get('/:id', (req, res) => {
 
 // add schedule to campaign
 router.post('/:id/schedule', (req, res) => {
-    // console.log(req.body)
     const campaignDataObj = {
         scheduledDate: new Date(req.body.scheduledDate).toISOString(),
         emailBody: req.body.emailBody,
@@ -107,6 +106,21 @@ router.post('/:customid/unsubscribe', (req, res) => {
         .then(response => {
             res.json(response);
         }).catch(error => {
+            res.json({ success: "false", message: error });
+        });
+});
+
+// get the list of users from a campaign
+router.get('/:id/users', (req, res) => {
+    const name = req.query.name;
+    const limit = Number(req.query.limit);
+    CampaignUser.find({ customId: new RegExp('^' + name + '_') })
+        .sort({ customId: 1 })
+        .limit(limit)
+        .then(users => {
+            res.json(users);
+        }).catch(error => {
+            console.log(error);
             res.json({ success: "false", message: error });
         });
 });

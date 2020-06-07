@@ -20,6 +20,9 @@ class Campaigns extends Component {
             if (response && response.data) {
                 this.setState({ campaigns: response.data, loading: false });
             }
+        }).catch(error=>{
+            console.log(error)
+            this.setState({ loading: false });
         });
     }
 

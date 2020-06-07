@@ -1,0 +1,10 @@
+.app-content {
+    margin-top: 80px; 
+    align-content: center;  
+    /* text-align: center; */
+}  
+
+.container {
+    max-width:1000px;
+    margin: auto;
+}

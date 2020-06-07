@@ -101,6 +101,8 @@ router.post('/:customid/unsubscribe', (req, res) => {
     const customId = req.params.customid;
     const userId = req.query.userId;
 
+    console.log(req.params, "query")
+
     CampaginUser.update({ customId, 'userData._id': userId }, { $set: { 'userData.$.unsubscribe': true } })
         .lean()
         .then(response => {

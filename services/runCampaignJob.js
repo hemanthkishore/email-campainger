@@ -1,7 +1,7 @@
 const Campaign = require('../models/Campaign');
 const CampaignUser = require('../models/CampaignUsers');
 const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey('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');
+sgMail.setApiKey('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');
 
 const fetchUsers = (index, limit) => {
     return new Promise(resolve => {
@@ -29,7 +29,7 @@ const sendEmails = (userDetails, data) => {
                     from: 'hemanth7kishore@gmail.com',
                     subject: data.emailSubject,
                     text: data.emailBody,
-                    html: `<p>${data.emailBody}</p> <br></br> <a href='${unsubscribeURL}'>Unsubscribe from this list.</a>`,
+                    html: `<p>${data.emailBody}</p> <br></br> <a href='${encodeURI(unsubscribeURL)}'>Unsubscribe from this list.</a>`,
                 });
             }
         });

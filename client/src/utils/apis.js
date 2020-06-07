@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const url = process.env.NODE_ENV === 'production' ? 'https://rocky-taiga-73939.herokuapp.com/' : 'http://localhost:5000';
+const url = process.env.NODE_ENV === 'production' ? 'https://rocky-taiga-73939.herokuapp.com' : 'http://localhost:5000';
 console.log(url);
 
 export function createCampaign(data) {
